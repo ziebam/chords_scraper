@@ -4,7 +4,7 @@ import pathlib
 import requests
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
-from bs4 import BeautifulSoup, BeautifulStoneSoup
+from bs4 import BeautifulSoup
 
 
 def scrape_ukutabs(base_url, params):
@@ -18,7 +18,7 @@ def scrape_ukutabs(base_url, params):
 
 # The search works very poorly on this website.
 def scrape_ukuleletabs(base_url, subdirs, params):
-    search_page = requests.get(base_url + "/".join(subdirs), params=params)
+    search_page = requests.get(base_url + subdirs, params=params)
     soup = BeautifulSoup(search_page.content, "html.parser")
 
     chords_link = soup.select_one("ul.resp_list li a")["href"]
@@ -27,7 +27,7 @@ def scrape_ukuleletabs(base_url, subdirs, params):
 
 
 def scrape_echords(base_url, subdirs):
-    search_page = requests.get(base_url + "/".join(subdirs))
+    search_page = requests.get(base_url + subdirs)
     soup = BeautifulSoup(search_page.content, "html.parser")
 
     chords_link = soup.select_one("ul#results a")["href"]
@@ -55,16 +55,16 @@ def scrape_ultimateguitar(base_url, subdirs, params):
 
 
 def main():
-    song = "+".join(sys.argv[1:])
+    song = " ".join(sys.argv[1:])
     print(scrape_ukutabs("https://ukutabs.com/", {"s": song}))
     print(
         scrape_ukuleletabs(
             "https://www.ukulele-tabs.com/",
-            ["search-uke-chords"],
+            "search-uke-chords",
             {"find": song},
         )
     )
-    print(scrape_echords("https://www.e-chords.com/", ["search-all", song]))
+    print(scrape_echords("https://www.e-chords.com/", f"search-all/{song}"))
     print(scrape_ultimateguitar("https://www.ultimate-guitar.com/", "search.php", song))
 
 
