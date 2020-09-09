@@ -49,10 +49,10 @@ def scrape_ultimateguitar(base_url, subdirs, params):
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
     chords_links = soup.select("a._2KJtL._1mes3.kWOod")
-    for chord_link in chords_links:
-        split = chord_link["href"].split("/")
+    for chords_link in chords_links:
+        split = chords_link["href"].split("/")
         if split[3] != "pro":
-            return chord_link["href"]
+            return chords_link["href"]
 
 
 def scrape_chordspl(base_url, artist, title):
