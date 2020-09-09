@@ -31,7 +31,7 @@ def scrape_echords(base_url, subdirs):
     search_page = requests.get(base_url + subdirs)
     soup = BeautifulSoup(search_page.content, "html.parser")
 
-    chords_link = soup.select_one("ul#results a")["href"]
+    chords_link = soup.select_one("ul#results p.h1 a")["href"]
 
     return chords_link
 
@@ -89,16 +89,25 @@ def scrape_chordspl(base_url, artist, title):
 def main():
     artist = sys.argv[1]
     title = sys.argv[2]
-    print(scrape_ukutabs("https://ukutabs.com/", {"s": song}))
+
+    print(scrape_ukutabs("https://ukutabs.com/", {"s": f"{artist} {title}"}))
+
     print(
         scrape_ukuleletabs(
             "https://www.ukulele-tabs.com/",
             "search-uke-chords",
-            {"find": song},
+            {"find": title},
         )
     )
-    print(scrape_echords("https://www.e-chords.com/", f"search-all/{song}"))
-    print(scrape_ultimateguitar("https://www.ultimate-guitar.com/", "search.php", song))
+
+    print(scrape_echords("https://www.e-chords.com/", f"search-all/{artist} {title}"))
+
+    print(
+        scrape_ultimateguitar(
+            "https://www.ultimate-guitar.com/", "search.php", f"{artist} {title}"
+        )
+    )
+
     print(scrape_chordspl("https://www.chords.pl/", artist, title))
 
 
