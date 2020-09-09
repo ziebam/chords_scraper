@@ -1,7 +1,10 @@
 import sys
 
+import pathlib
 import requests
-from bs4 import BeautifulSoup
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
+from bs4 import BeautifulSoup, BeautifulStoneSoup
 
 
 def scrape_ukutabs(base_url, params):
@@ -32,8 +35,27 @@ def scrape_echords(base_url, subdirs):
     return chords_link
 
 
+def scrape_ultimateguitar(base_url, subdirs, params):
+    search_page = f"{base_url}{subdirs}?search_type=title&value={params}"
+
+    options = Options()
+    options.headless = True
+
+    executable_path = pathlib.Path("chords_scraper", "drivers", "geckodriver.exe")
+
+    with Firefox(options=options, executable_path=executable_path) as driver:
+        driver.get(search_page)
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+
+    chords_links = soup.select("a._2KJtL._1mes3.kWOod")
+    for chord_link in chords_links:
+        split = chord_link["href"].split("/")
+        if split[3] != "pro":
+            return chord_link["href"]
+
+
 def main():
-    song = " ".join(sys.argv[1:])
+    song = "+".join(sys.argv[1:])
     print(scrape_ukutabs("https://ukutabs.com/", {"s": song}))
     print(
         scrape_ukuleletabs(
@@ -43,6 +65,7 @@ def main():
         )
     )
     print(scrape_echords("https://www.e-chords.com/", ["search-all", song]))
+    print(scrape_ultimateguitar("https://www.ultimate-guitar.com/", "search.php", song))
 
 
 if __name__ == "__main__":
