@@ -23,6 +23,15 @@ def scrape_ukuleletabs(base_url, subdirs, params):
     return base_url + chords_link[1:]
 
 
+def scrape_echords(base_url, subdirs):
+    search_page = requests.get(base_url + "/".join(subdirs))
+    soup = BeautifulSoup(search_page.content, "html.parser")
+
+    chords_link = soup.select_one("ul#results a")["href"]
+
+    return chords_link
+
+
 def main():
     song = " ".join(sys.argv[1:])
     print(scrape_ukutabs("https://ukutabs.com/", {"s": song}))
@@ -33,6 +42,7 @@ def main():
             {"find": song},
         )
     )
+    print(scrape_echords("https://www.e-chords.com/", ["search-all", song]))
 
 
 if __name__ == "__main__":
