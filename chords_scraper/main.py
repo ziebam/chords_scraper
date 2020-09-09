@@ -1,10 +1,11 @@
+import pathlib
 import sys
 
-import pathlib
 import requests
+from bs4 import BeautifulSoup
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
-from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def scrape_ukutabs(base_url, params):
@@ -54,8 +55,40 @@ def scrape_ultimateguitar(base_url, subdirs, params):
             return chord_link["href"]
 
 
+def scrape_chordspl(base_url, artist, title):
+
+    options = Options()
+    options.headless = True
+
+    executable_path = pathlib.Path("chords_scraper", "drivers", "geckodriver.exe")
+
+    with Firefox(options=options, executable_path=executable_path) as driver:
+        driver.get(base_url)
+
+        default_result = driver.find_element_by_class_name("v0")
+
+        form = driver.find_element_by_id("fs_band_name")
+        form.send_keys(artist)
+        form = driver.find_element_by_id("fs_title")
+        form.send_keys(title)
+        form.submit()
+
+        wait = WebDriverWait(driver, 10)
+        wait.until(
+            lambda driver: driver.find_element_by_class_name("v0") != default_result
+        )
+
+        result = driver.find_element_by_class_name("v0")
+        chords_link = result.find_element_by_css_selector(
+            "td:nth-of-type(3) a"
+        ).get_attribute("href")
+
+        return chords_link
+
+
 def main():
-    song = " ".join(sys.argv[1:])
+    artist = sys.argv[1]
+    title = sys.argv[2]
     print(scrape_ukutabs("https://ukutabs.com/", {"s": song}))
     print(
         scrape_ukuleletabs(
@@ -66,6 +99,7 @@ def main():
     )
     print(scrape_echords("https://www.e-chords.com/", f"search-all/{song}"))
     print(scrape_ultimateguitar("https://www.ultimate-guitar.com/", "search.php", song))
+    print(scrape_chordspl("https://www.chords.pl/", artist, title))
 
 
 if __name__ == "__main__":
