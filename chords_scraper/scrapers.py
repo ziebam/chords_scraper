@@ -55,7 +55,8 @@ def scrape_ultimateguitar(base_url, subdirs, params):
     options = Options()
     options.headless = True
 
-    executable_path = pathlib.Path("chords_scraper", "drivers", "geckodriver.exe")
+    data_root = pathlib.Path(getattr(sys, "_MEIPASS", ""))
+    executable_path = pathlib.Path(data_root, "drivers", "geckodriver.exe")
 
     with Firefox(options=options, executable_path=executable_path) as driver:
         driver.get(search_page)
@@ -76,7 +77,8 @@ def scrape_chordspl(base_url, artist, title):
     options = Options()
     options.headless = True
 
-    executable_path = pathlib.Path("chords_scraper", "drivers", "geckodriver.exe")
+    data_root = pathlib.Path(getattr(sys, "_MEIPASS", ""))
+    executable_path = pathlib.Path(data_root, "drivers", "geckodriver.exe")
 
     with Firefox(options=options, executable_path=executable_path) as driver:
         driver.get(base_url)

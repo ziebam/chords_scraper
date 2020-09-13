@@ -1,6 +1,7 @@
 import pathlib
 import tkinter as tk
 import webbrowser
+import sys
 
 from .scrapers import (
     scrape_ukutabs,
@@ -27,7 +28,8 @@ class GUI(tk.Tk):
         self.init_input_frame()
 
     def init_main_window(self):
-        self.iconbitmap(pathlib.Path("chords_scraper", "assets", "ukulele.ico"))
+        data_root = pathlib.Path(getattr(sys, "_MEIPASS", ""))
+        self.iconbitmap(pathlib.Path(data_root, "assets", "ukulele.ico"))
         self.title("Chords Scraper")
         self.geometry(f"{self.width}x{self.height}")
         self.resizable(False, False)
