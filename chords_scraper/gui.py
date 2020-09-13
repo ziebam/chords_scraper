@@ -2,7 +2,13 @@ import pathlib
 import tkinter as tk
 import webbrowser
 
-import scrapers
+from .scrapers import (
+    scrape_ukutabs,
+    scrape_ukuleletabs,
+    scrape_echords,
+    scrape_ultimateguitar,
+    scrape_chordspl,
+)
 
 
 def callback(url):
@@ -179,19 +185,17 @@ class GUI(tk.Tk):
 
     def display_links(self, artist, title):
         links = [
-            scrapers.scrape_ukutabs("https://ukutabs.com/", {"s": f"{artist} {title}"}),
-            scrapers.scrape_ukuleletabs(
+            scrape_ukutabs("https://ukutabs.com/", {"s": f"{artist} {title}"}),
+            scrape_ukuleletabs(
                 "https://www.ukulele-tabs.com/",
                 "search-uke-chords",
                 {"find": title},
             ),
-            scrapers.scrape_echords(
-                "https://www.e-chords.com/", f"search-all/{artist} {title}"
-            ),
-            scrapers.scrape_ultimateguitar(
+            scrape_echords("https://www.e-chords.com/", f"search-all/{artist} {title}"),
+            scrape_ultimateguitar(
                 "https://www.ultimate-guitar.com/", "search.php", f"{artist} {title}"
             ),
-            scrapers.scrape_chordspl("https://www.chords.pl/", artist, title),
+            scrape_chordspl("https://www.chords.pl/", artist, title),
         ]
 
         result_labels = self.results_frame.winfo_children()[2::2]
